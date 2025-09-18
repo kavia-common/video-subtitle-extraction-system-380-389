@@ -2,13 +2,10 @@ package org.example.app
 
 import android.Manifest
 import android.app.Activity
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
-import android.view.MenuItem
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -57,7 +54,6 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[PlayerViewModel::class.java]
 
         toolbar = findViewById(R.id.topAppBar)
-        toolbar.setOnMenuItemClickListener(::onMenuItemClick)
 
         playerView = findViewById(R.id.playerView)
         btnOpen = findViewById(R.id.btnOpen)
@@ -141,27 +137,6 @@ class MainActivity : AppCompatActivity() {
         player.setMediaItem(MediaItem.fromUri(uri))
         player.prepare()
         player.playWhenReady = true
-    }
-
-    private fun onMenuItemClick(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_settings -> {
-                // For demo, link to app settings.
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = Uri.fromParts("package", packageName, null)
-                }
-                startActivity(intent)
-                true
-            }
-            R.id.menu_help -> {
-                // Simple help via chooser to open a URL (placeholder).
-                val helpUrl = Uri.parse("https://developer.android.com/guide/topics/media/exoplayer")
-                val intent = Intent(Intent.ACTION_VIEW, helpUrl)
-                startActivity(intent)
-                true
-            }
-            else -> false
-        }
     }
 
     private fun ensureStoragePermissionThen(onGranted: () -> Unit) {
