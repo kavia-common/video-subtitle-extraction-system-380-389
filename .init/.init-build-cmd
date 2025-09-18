@@ -1,0 +1,4 @@
+{
+    "command": "./gradlew assembleDebug",
+    "working_directory": "/home/kavia/workspace/code-generation/video-subtitle-extraction-system-380-389/android_subtitle_frontend"
+}
