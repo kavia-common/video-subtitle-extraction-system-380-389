@@ -1,0 +1,10 @@
+Place a small, license-free MP4 named exactly "sample.mp4" in this folder.
+
+Why:
+- The app can use this bundled video for offline/local playback testing.
+- Keeps testing predictable without relying on device storage or network.
+
+Guidelines:
+- Keep the file small (<2 MB).
+- Ensure the format is MP4 (H.264/AAC typical).
+- Rebuild the app after adding the file so it gets packaged into the APK.
