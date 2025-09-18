@@ -1,0 +1,36 @@
+<resources>
+    <style name="Theme.OceanProfessional" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/ocean_primary</item>
+        <item name="colorSecondary">@color/ocean_secondary</item>
+        <item name="android:statusBarColor">@color/ocean_primary</item>
+        <item name="android:navigationBarColor">@color/ocean_surface</item>
+        <item name="android:windowBackground">@color/ocean_bg</item>
+    </style>
+
+    <style name="Widget.Ocean.TopAppBar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@drawable/bg_appbar</item>
+        <item name="titleTextColor">@color/ocean_text</item>
+    </style>
+
+    <style name="Widget.Ocean.Button.Primary" parent="Widget.Material3.Button">
+        <item name="android:backgroundTint">@color/ocean_primary</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="cornerRadius">16dp</item>
+    </style>
+
+    <style name="Widget.Ocean.Button.Amber" parent="Widget.Material3.Button">
+        <item name="android:backgroundTint">@color/ocean_secondary</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="cornerRadius">16dp</item>
+    </style>
+
+    <style name="Widget.Ocean.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:textColor">@color/ocean_primary</item>
+        <item name="strokeColor">@color/ocean_primary</item>
+        <item name="cornerRadius">16dp</item>
+    </style>
+
+    <style name="Text.Ocean.Caption" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textColor">@color/ocean_text</item>
+    </style>
+</resources>

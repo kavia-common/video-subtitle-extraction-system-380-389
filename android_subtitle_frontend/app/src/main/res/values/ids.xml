@@ -1,0 +1,4 @@
+<resources>
+    <item name="menu_settings" type="id"/>
+    <item name="menu_help" type="id"/>
+</resources>
