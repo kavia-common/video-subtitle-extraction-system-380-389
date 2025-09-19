@@ -7,7 +7,6 @@ import android.os.Looper
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.google.android.exoplayer2.Player
 import org.example.app.ml.SubtitleExtractor
 import org.example.app.ml.TFLiteSubtitleExtractorStub
 import org.example.app.player.PlayerRepository
@@ -15,6 +14,16 @@ import org.example.app.player.PlayerRepository
 /**
  PUBLIC_INTERFACE
  ViewModel exposing player state and live subtitle text.
+ Responsibilities:
+ - Owns PlayerRepository for ExoPlayer lifecycle.
+ - Polls playback position and duration.
+ - Periodically invokes SubtitleExtractor with a placeholder frame to simulate ML inference.
+
+ LiveData:
+ - subtitle: Latest subtitle line for the UI overlay.
+ - durationMs: Total media duration in ms.
+ - positionMs: Current playback position in ms.
+ - isPlaying: Whether the player is currently playing.
  */
 class PlayerViewModel(app: Application) : AndroidViewModel(app) {
 
@@ -41,11 +50,11 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
             _durationMs.value = p.duration
             _isPlaying.value = p.isPlaying
 
-            // Simulated frame capture: in a real app, capture a frame using VideoFrameMetadataListener
-            // or a separate decoder path. Here we use a 1x1 dummy bitmap as placeholder.
+            // NOTE: In production, capture real frames via ExoPlayer video frame APIs or a decoder pipeline.
             val fakeFrame = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
             val text = extractor.extractFromFrame(fakeFrame, p.currentPosition)
             if (!text.isNullOrBlank()) {
+                // Lint: enforce non-null assignment for LiveData value
                 _subtitle.value = text ?: ""
             }
 
@@ -53,14 +62,19 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    // PUBLIC_INTERFACE
     fun player() = repository.player
 
+    // PUBLIC_INTERFACE
     fun startTicker() {
+        /** Starts periodic updates of playback state and ML extraction. */
         stopTicker()
         mainHandler.post(ticker)
     }
 
+    // PUBLIC_INTERFACE
     fun stopTicker() {
+        /** Stops periodic updates. Call in onStop/onCleared to avoid leaks. */
         mainHandler.removeCallbacks(ticker)
     }
 

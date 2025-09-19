@@ -1,7 +1,6 @@
 package org.example.app
 
 import android.Manifest
-import android.app.Activity
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -23,11 +22,17 @@ import org.example.app.util.TimeUtils
 /**
  PUBLIC_INTERFACE
  Main entry activity hosting the video player, controls, and subtitle overlay.
- This activity:
- - Initializes ExoPlayer via the ViewModel
- - Allows user to open a video (local or remote)
- - Controls playback (play/pause/stop) and seeking
- - Displays real-time subtitles provided by a stub ML extractor (TFLite-ready)
+ Summary:
+ - Initializes ExoPlayer via the ViewModel.
+ - Allows user to open a local MP4 using the system picker (SAF).
+ - Controls playback (play/pause/stop) and seeking via a Material Slider.
+ - Displays real-time subtitles produced by an integrated ML extractor (stubbed TFLite-ready).
+
+ Parameters: None (entry activity)
+ Returns: None
+ Usage notes:
+ - On API 33+ (Tiramisu), READ_EXTERNAL_STORAGE permission is not required for the SAF picker.
+ - The ML extractor is a stub that simulates text at intervals; replace with a real model for production.
  */
 class MainActivity : AppCompatActivity() {
 
@@ -42,6 +47,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var subtitleOverlay: TextView
     private lateinit var toolbar: MaterialToolbar
 
+    // SAF content picker limited to "video/*" which includes MP4.
     private val pickVideoLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let { loadVideo(it) }
@@ -68,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         setupControls()
         observeState()
 
-        // Handle videos opened from other apps
+        // Handle videos opened from other apps (e.g., share target)
         intent?.data?.let { loadVideo(it) }
     }
 
@@ -83,12 +89,8 @@ class MainActivity : AppCompatActivity() {
                 pickVideoLauncher.launch("video/*")
             }
         }
-        btnPlayPause.setOnClickListener {
-            togglePlayPause()
-        }
-        btnStop.setOnClickListener {
-            stopPlayback()
-        }
+        btnPlayPause.setOnClickListener { togglePlayPause() }
+        btnStop.setOnClickListener { stopPlayback() }
         seekBar.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
                 val target = (value * (viewModel.durationMs.value ?: 0L) / 100f).toLong()
@@ -99,7 +101,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun observeState() {
         viewModel.subtitle.observe(this) { text ->
-            subtitleOverlay.text = if (text.isNullOrBlank()) getString(R.string.subtitle_placeholder) else text
+            subtitleOverlay.text =
+                if (text.isNullOrBlank()) getString(R.string.subtitle_placeholder) else text
         }
         viewModel.positionMs.observe(this) { pos ->
             txtCurrent.text = TimeUtils.formatMs(pos)
@@ -115,7 +118,8 @@ class MainActivity : AppCompatActivity() {
             txtDuration.text = TimeUtils.formatMs(dur)
         }
         viewModel.isPlaying.observe(this) { playing ->
-            btnPlayPause.text = if (playing) getString(R.string.action_pause) else getString(R.string.action_play)
+            btnPlayPause.text =
+                if (playing) getString(R.string.action_pause) else getString(R.string.action_play)
             if (playing) viewModel.startTicker() else viewModel.stopTicker()
         }
     }
@@ -145,22 +149,16 @@ class MainActivity : AppCompatActivity() {
             onGranted()
             return
         }
-
         val perm = Manifest.permission.READ_EXTERNAL_STORAGE
         when {
             ContextCompat.checkSelfPermission(this, perm) == PackageManager.PERMISSION_GRANTED -> onGranted()
-            shouldShowRequestPermissionRationale(perm) -> {
-                // Show quick rationale or proceed to request
-                requestPermissionLauncher.launch(perm)
-            }
-            else -> {
-                requestPermissionLauncher.launch(perm)
-            }
+            shouldShowRequestPermissionRationale(perm) -> requestPermissionLauncher.launch(perm)
+            else -> requestPermissionLauncher.launch(perm)
         }
     }
 
     private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { _ ->
             // No-op; flow continues via user action
         }
 

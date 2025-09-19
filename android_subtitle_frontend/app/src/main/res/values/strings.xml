@@ -4,5 +4,5 @@
     <string name="action_play">Play</string>
     <string name="action_pause">Pause</string>
     <string name="action_stop">Stop</string>
-    <string name="subtitle_placeholder">Listening…</string>
+    <string name="subtitle_placeholder">Listening… open an MP4 to begin</string>
 </resources>

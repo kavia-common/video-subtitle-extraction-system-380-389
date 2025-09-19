@@ -12,19 +12,25 @@ interface SubtitleExtractor {
 }
 
 /**
- * Stub implementation that simulates on-device inference. This class is designed for
- * drop-in replacement with a real TFLite pipeline. To integrate a real model:
- * - Load a TFLite model from assets (e.g., assets/model.tflite)
- * - Preprocess the bitmap into an input tensor
- * - Run interpreter.run(input, output)
- * - Postprocess output to text
+ PUBLIC_INTERFACE
+ Stub implementation that simulates on-device inference. Designed for
+ drop-in replacement with a real TFLite pipeline.
+
+ To integrate a real model:
+ - Place model.tflite under app/src/main/assets/
+ - Initialize Interpreter with MappedByteBuffer from assets
+ - Preprocess the bitmap into an input tensor (e.g., RGB bytebuffer / float32)
+ - interpreter.run(input, output)
+ - Convert output to readable subtitle text
+
+ Returns: Simulated strings at intervals to emulate inference cadence.
  */
 class TFLiteSubtitleExtractorStub(context: Context) : SubtitleExtractor {
 
     private var warm = false
 
     override fun extractFromFrame(frame: Bitmap, positionMs: Long): String? {
-        // Fake warm-up and simulated subtitle fragments every ~2 seconds.
+        // Fake warm-up and simulated subtitle fragments every ~0.5s checks.
         if (!warm) {
             warm = true
             return null
